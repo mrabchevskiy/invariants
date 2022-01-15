@@ -1,0 +1,195 @@
+
+ CONSTRUCTION OF INVARIANTS USING SEMANTIC TYPES
+
+  For more details see https://gnosiseng.com/agi.html
+
+
+ SEMANTIC TYPES:
+
+   B | boolean
+   R | real number
+   r | ratio
+   X | X coordinate
+   Y | Y coordinate
+   T | time point
+   D | duration
+   x | X distance
+   y | Y distance
+   E | Euclidean norm
+   L | distance
+   U | X velocity
+   V | Y velocity
+
+
+ OPERATORS:
+
+   * | multiplication
+   / | division
+   - | substraction
+   + | addition
+   ^ | hypot(*,*)
+   = | equality
+   < | less than
+   | | or
+   & | and
+
+
+ ATOMIC INVARIANT FUNCTIONS
+
+     Note: If right arg type symbol equals `,` it means that:
+
+       [a] allowed more than 2 arguments
+       [b] all arguments has the same semantic type
+       [c] operator indifferent to order off arguments (communicative)
+
+    #     Operator         Left arg type    Right arg type   Result type     
+
+    0  -  substraction     X coordinate     X coordinate     X distance      
+    1  -  substraction     Y coordinate     Y coordinate     Y distance      
+    2  -  substraction     time point       time point       duration        
+    3  ^  hypot(*,*)       X distance       Y distance       Euclidean norm  
+    4  /  division         X distance       duration         X velocity      
+    5  /  division         Y distance       duration         Y velocity      
+    6  /  division         Euclidean norm   Euclidean norm   ratio           
+    7  /  division         distance         distance         real number     
+    8  +  addition         Euclidean norm   Euclidean norm   distance        
+    9  <  less than        Euclidean norm   Euclidean norm   boolean         
+   10  <  less than        distance         distance         boolean         
+   11  <  less than        distance         Euclidean norm   boolean         
+   12  <  less than        Euclidean norm   distance         boolean         
+   13  <  less than        ratio            ratio            boolean         
+   14  <  less than        real number      ratio            boolean         
+   15  <  less than        ratio            real number      boolean         
+   16  |  or               boolean          boolean          boolean         
+   17  &  and              boolean          boolean          boolean         
+
+
+ _____________________________________________ 
+
+ ARGUMENTS
+
+   Arguments are numerical values and can be used as invariants.
+   In the postfix expression index `0`..`6` refers argument:
+
+   index  semantic type    description
+
+     0    X coordinate     X1 ~ Object1, x coordinate
+     1    Y coordinate     Y1 ~ Object1, y coordinate
+     2    Euclidean norm   R1 ~ Object1, radius
+     3    X coordinate     X2 ~ Object2, x coordinate
+     4    Y coordinate     Y2 ~ Object2, y coordinate
+     5    Euclidean norm   R2 ~ Object2, radius
+ _____________________________________________
+
+
+ POTENTIAL INVARIANT FUNCTIONS
+
+   Maximal depth of function nesting: 5
+ _____________________________________________
+
+     #  Postfix expression             Semantic type Infix expression
+
+ 0   0  0                                        [X] X1
+ 0   1  1                                        [Y] Y1
+ 0   2  2                                        [E] R1
+ 0   3  3                                        [X] X2
+ 0   4  4                                        [Y] Y2
+ 0   5  5                                        [E] R2
+
+ Dept              0
+ Total tested      0
+ Total usable      6
+ __________________________________________________________________________________________________
+
+
+     #  Postfix expression             Semantic type Infix expression
+
+ 1   7  03-                                      [x] X1-X2
+ 1   8  30-                                      [x] X2-X1
+ 1   9  14-                                      [y] Y1-Y2
+ 1  10  41-                                      [y] Y2-Y1
+ 1  11  25/                                      [r] R1/R2
+ 1  12  52/                                      [r] R2/R1
+ 1  13  25+                                      [L] R1+R2
+ 1  14  25<                                      [B] R1<R2
+ 1  15  52<                                      [B] R2<R1
+
+ Dept              1
+ Total tested    990
+ Total usable     15
+ __________________________________________________________________________________________________
+
+     #  Postfix expression             Semantic type Infix expression
+
+ 2  16  03-14-^                                  [E] hypot(X1-X2,Y1-Y2)
+
+ Dept              2
+ Total tested   7920
+ Total usable     16
+ __________________________________________________________________________________________________
+
+     #  Postfix expression             Semantic type Infix expression
+
+ 3  17  203-14-^/                                [r] R1/hypot(X1-X2,Y1-Y2)
+ 3  18  03-14-^2/                                [r] hypot(X1-X2,Y1-Y2)/R1
+ 3  19  03-14-^2+                                [L] hypot(X1-X2,Y1-Y2)+R1
+ 3  20  203-14-^<                                [B] R1<hypot(X1-X2,Y1-Y2)
+ 3  21  03-14-^2<                                [B] hypot(X1-X2,Y1-Y2)<R1
+ 3  22  503-14-^/                                [r] R2/hypot(X1-X2,Y1-Y2)
+ 3  23  03-14-^5/                                [r] hypot(X1-X2,Y1-Y2)/R2
+ 3  24  03-14-^5+                                [L] hypot(X1-X2,Y1-Y2)+R2
+ 3  25  503-14-^<                                [B] R2<hypot(X1-X2,Y1-Y2)
+ 3  26  03-14-^5<                                [B] hypot(X1-X2,Y1-Y2)<R2
+ 3  27  25+03-14-^<                              [B] R1+R2<hypot(X1-X2,Y1-Y2)
+ 3  28  03-14-^25+<                              [B] hypot(X1-X2,Y1-Y2)<R1+R2
+
+ Dept              3
+ Total tested  15840
+ Total usable     28
+ __________________________________________________________________________________________________
+
+     #  Postfix expression             Semantic type Infix expression
+
+ 4  29  03-14-^5+2<                              [B] hypot(X1-X2,Y1-Y2)+R2<R1
+ 4  30  25/03-14-^2/<                            [B] R1/R2<hypot(X1-X2,Y1-Y2)/R1
+ 4  31  03-14-^2/25/<                            [B] hypot(X1-X2,Y1-Y2)/R1<R1/R2
+ 4  32  25/503-14-^/<                            [B] R1/R2<R2/hypot(X1-X2,Y1-Y2)
+ 4  33  503-14-^/25/<                            [B] R2/hypot(X1-X2,Y1-Y2)<R1/R2
+ 4  34  25+03-14-^2+/                            [R] (R1+R2)/(hypot(X1-X2,Y1-Y2)+R1)
+ 4  35  03-14-^2+25+/                            [R] (hypot(X1-X2,Y1-Y2)+R1)/(R1+R2)
+ 4  36  25+03-14-^5+/                            [R] (R1+R2)/(hypot(X1-X2,Y1-Y2)+R2)
+ 4  37  03-14-^5+25+/                            [R] (hypot(X1-X2,Y1-Y2)+R2)/(R1+R2)
+ 4  38  203-14-^<25<|                            [B] R1<hypot(X1-X2,Y1-Y2)|R1<R2
+ 4  39  03-14-^2<25<|                            [B] hypot(X1-X2,Y1-Y2)<R1|R1<R2
+ 4  40  03-14-^2<25<&                            [B] hypot(X1-X2,Y1-Y2)<R1&R1<R2
+ 4  41  25+03-14-^<25<|                          [B] R1+R2<hypot(X1-X2,Y1-Y2)|R1<R2
+ 4  42  25+03-14-^<25<&                          [B] R1+R2<hypot(X1-X2,Y1-Y2)&R1<R2
+ 4  43  03-14-^25+<25<|                          [B] hypot(X1-X2,Y1-Y2)<R1+R2|R1<R2
+ 4  44  03-14-^25+<25<&                          [B] hypot(X1-X2,Y1-Y2)<R1+R2&R1<R2
+ 4  45  203-14-^<52<&                            [B] R1<hypot(X1-X2,Y1-Y2)&R2<R1
+ 4  46  03-14-^2<52<|                            [B] hypot(X1-X2,Y1-Y2)<R1|R2<R1
+ 4  47  25+03-14-^<52<|                          [B] R1+R2<hypot(X1-X2,Y1-Y2)|R2<R1
+ 4  48  25+03-14-^<52<&                          [B] R1+R2<hypot(X1-X2,Y1-Y2)&R2<R1
+ 4  49  03-14-^25+<52<|                          [B] hypot(X1-X2,Y1-Y2)<R1+R2|R2<R1
+ 4  50  03-14-^25+<52<&                          [B] hypot(X1-X2,Y1-Y2)<R1+R2&R2<R1
+ 4  51  503-14-^/03-14-^2/<                      [B] R2/hypot(X1-X2,Y1-Y2)<hypot(X1-X2,Y1-Y2)/R1
+ 4  52  03-14-^2+03-14-^5+/                      [R] (hypot(X1-X2,Y1-Y2)+R1)/(hypot(X1-X2,Y1-Y2)+R2)
+ 4  53  03-14-^5+03-14-^2+/                      [R] (hypot(X1-X2,Y1-Y2)+R2)/(hypot(X1-X2,Y1-Y2)+R1)
+ 4  54  203-14-^<25<&                            [B] R1<hypot(X1-X2,Y1-Y2)&R1<R2
+ 4  55  203-14-^<503-14-^<&                      [B] R1<hypot(X1-X2,Y1-Y2)&R2<hypot(X1-X2,Y1-Y2)
+ 4  56  03-14-^25+<203-14-^<&                    [B] hypot(X1-X2,Y1-Y2)<R1+R2&R1<hypot(X1-X2,Y1-Y2)
+ 4  57  03-14-^2<503-14-^<|                      [B] hypot(X1-X2,Y1-Y2)<R1|R2<hypot(X1-X2,Y1-Y2)
+ 4  58  03-14-^2<03-14-^5<|                      [B] hypot(X1-X2,Y1-Y2)<R1|hypot(X1-X2,Y1-Y2)<R2
+ 4  59  03-14-^2<03-14-^5<&                      [B] hypot(X1-X2,Y1-Y2)<R1&hypot(X1-X2,Y1-Y2)<R2
+ 4  60  03-14-^2<503-14-^<&                      [B] hypot(X1-X2,Y1-Y2)<R1&R2<hypot(X1-X2,Y1-Y2)
+ 4  61  03-14-^25+<503-14-^<&                    [B] hypot(X1-X2,Y1-Y2)<R1+R2&R2<hypot(X1-X2,Y1-Y2)
+ 4  62  03-14-^5<25<|                            [B] hypot(X1-X2,Y1-Y2)<R2|R1<R2
+ 4  63  03-14-^5<52<|                            [B] hypot(X1-X2,Y1-Y2)<R2|R2<R1
+ 4  64  03-14-^5<25+03-14-^<|                    [B] hypot(X1-X2,Y1-Y2)<R2|R1+R2<hypot(X1-X2,Y1-Y2)
+
+ Dept              4
+ Total tested  40788
+ Total usable     64
+ __________________________________________________________________________________________________
+
+ Finish
